@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+const height = ref(0);
+const weight = ref(0);
+const result = ref(0);
+function calBmi() {
+  result.value = weight.value / (height.value / 100) ** 2;
+}
+</script>
 
 <template>
   <div><h1>เครื่องคำนวณหาค่าดัชนีมวลกาย (BMI)</h1></div>
@@ -11,10 +19,12 @@
     </p>
   </div>
   <div><label>น้ำหนักตัว (kg.)</label></div>
-  <div><input id="height" /></div>
+  <div><input id="weight" v-model="weight" /></div>
   <div><label>ส่วนสูง (cm.)</label></div>
-  <div><input id="weight" /></div>
-  <div><button>คำนวณ</button></div>
+  <div><input id="height" v-model="height" /></div>
+  <div><button @click="calBmi">คำนวณ</button></div>
+  <div>BMI</div>
+  <div>{{ result }}</div>
   <div>
     <table>
       <tr>
@@ -22,27 +32,27 @@
         <th>อยู่ในเกณท์</th>
         <th>ภาวะเสี่ยงต่อโรค</th>
       </tr>
-      <tr>
+      <tr :class="{ 'focusbmi-color': result < 18.5 }">
         <td>น้อยกว่า 18.50</td>
         <td>น้ำหนักน้อย / ผอม</td>
         <td>มากกว่าคนปกติ</td>
       </tr>
-      <tr>
+      <tr :class="{ 'focusbmi-color': result >= 18.5 && result <= 22.9 }">
         <td>ระหว่าง 18.50 - 22.90</td>
         <td>ปกติ (สุขภาพดี)</td>
         <td>เท่าคนปกติ</td>
       </tr>
-      <tr>
+      <tr :class="{ 'focusbmi-color': result >= 23 && result <= 24.9 }">
         <td>ระหว่าง 23 - 24.90</td>
         <td>ท้วม / โรคอ้วนระดับ 1</td>
         <td>อันตรายระดับ 1</td>
       </tr>
-      <tr>
+      <tr :class="{ 'focusbmi-color': result >= 25 && result <= 29.9 }">
         <td>ระหว่าง 25 - 29.90</td>
         <td>อ้วน / โรคอ้วนระดับ 2</td>
         <td>อันตรายระดับ 2</td>
       </tr>
-      <tr>
+      <tr :class="{ 'focusbmi-color': result >= 30 }">
         <td>มากกว่า 30</td>
         <td>อ้วนมาก / โรคอ้วนระดับ 3</td>
         <td>อันตรายระดับ 3</td>
@@ -50,7 +60,7 @@
     </table>
   </div>
 
-  <div>
+  <div v-if="result < 18.5">
     <h1>น้ำหนักน้อยกว่ามาตรฐาน</h1>
     <p>
       คุณมีน้ำหนักน้อยหรือผอม โดยทั่วไป ค่าดัชนีมวลกายปกติมีค่าน้อยกว่า 18.50
@@ -70,7 +80,7 @@
       </li>
     </ol>
   </div>
-  <div>
+  <div v-else-if="result >= 18.5 && result <= 22.9">
     <h1>น้ำหนักปกติ</h1>
     <p>
       คุณมี น้ำหนักปกติ โดยทั่วไปค่าดัชนีมวลกายปกติมีค่าระหว่าง 18.50 - 22.90
@@ -98,7 +108,7 @@
       </li>
     </ol>
   </div>
-  <div>
+  <div v-else-if="result >= 23 && result <= 24.9">
     <h1>ท้วม / อ้วนระดับ 1</h1>
     <p>
       คุณมี น้ำหนักเกิน หรือรูปร่างท้วม โดยทั่วไปค่าดัชนีมวลกายปกติมีค่าระหว่าง
@@ -134,7 +144,7 @@
       </li>
     </ol>
   </div>
-  <div>
+  <div v-else-if="result >= 25 && result <= 29.9">
     <h1>อ้วน / อ้วนระดับ 2</h1>
     <p>
       คุณ อ้วนแล้ว (อ้วนระดับ 2) โดยทั่วไปค่าดัชนีมวลกายปกติมีค่าระหว่าง 25 -
@@ -177,7 +187,7 @@
       <li>ควรปรึกษาแพทย์หรือผู้เชี่ยวชาญในการลดและควบคุมน้ำหนัก</li>
     </ol>
   </div>
-  <div>
+  <div v-else-if="result >= 30">
     <h1>อ้วนมาก / อ้วนระดับ 3</h1>
     <p>
       คุณ อ้วนมากแล้ว (อ้วนระดับ 3) โดยทั่วไปค่าดัชนีมวลกายปกติมีค่ามากกว่า 30
@@ -221,4 +231,8 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.focusbmi-color {
+  background-color: rgb(255, 206, 236);
+}
+</style>
